@@ -1,0 +1,11 @@
+[
+  {"categoria": "clase", "nombre": "Guerrero (2024)", "fuente": "resumen", "contenido": "Dado de golpe d10. Competente en armas y armaduras. Rasgos: Estilo de combate (nv1), Oleada de acción (nv2), etc. Introduce aquí tus notas de tu manual para uso privado."},
+  {"categoria": "clase", "nombre": "Mago (2024)", "fuente": "resumen", "contenido": "Dado de golpe d6. Lanzamiento de conjuros con Inteligencia. Introduce aquí tus notas."},
+  {"categoria": "especie", "nombre": "Humano (2024)", "fuente": "resumen", "contenido": "+1 a todo / Versátil según reglas 2024. Personaliza con tu manual."},
+  {"categoria": "especie", "nombre": "Elfo (2024)", "fuente": "resumen", "contenido": "Visión en la oscuridad, Linaje feérico. Personaliza con tu manual."},
+  {"categoria": "regla", "nombre": "Ventaja / Desventaja (2024)", "fuente": "SRD 5.2", "contenido": "Tira 2d20 y quédate con el mayor (ventaja) o menor (desventaja). No se acumula."},
+  {"categoria": "regla", "nombre": "Cuadrícula de combate (2024)", "fuente": "resumen", "contenido": "1 casilla = 5 pies (1,5 m). Movimiento en diagonal cuesta 5 pies por casilla (regla 2024 simplificada)."},
+  {"categoria": "monstruo", "nombre": "Goblin (ejemplo)", "fuente": "SRD 5.2", "contenido": "Criatura pequeña. CA ~15, PG ~7. Escabullirse como acción adicional."},
+  {"categoria": "hechizo", "nombre": "Bola de fuego (ejemplo)", "fuente": "SRD 5.2", "contenido": "Nivel 3. 8d6 fuego, salvación Destreza mitad. Radio 20 pies."},
+  {"categoria": "objeto", "nombre": "Espada larga", "fuente": "SRD 5.2", "contenido": "1d8 cortante (1d10 a dos manos). Versátil."}
+]

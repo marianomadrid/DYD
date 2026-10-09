@@ -1,0 +1,14 @@
+# Contenido privado del usuario: no se sube
+data/dnd.db
+data/crash.log
+data/error.log
+Personajes/*.pdf
+Retratos/
+Mapas/
+data/5etools/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
