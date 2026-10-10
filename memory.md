@@ -3,78 +3,47 @@
 ## Regla
 - Este fichero es el changelog. Máximo 80 líneas: resumir o eliminar lo viejo.
 
-## 2026-10-05 — Scaffold + entorno
-- Python 3.12 + PySide6 + SQLite en `C:\Proyecto IA DYD`; `AGENTS.md` (≤50).
-- 5 pestañas; BD correlacionada (campañas→mapas→ciudades→battlemaps→pjs).
-- Seed SRD, sin texto WotC; battlemap con niebla/medición/iniciativa (1 casilla = 5 pies).
+## Histórico resumido (2026-10-05 → 10-08)
+- Scaffold PySide6+SQLite, 5 pestañas, BD correlacionada (campañas→mapas→ciudades
+  →battlemaps→pjs); seed SRD; battlemap con niebla, medición e iniciativa.
+- `personajes` con `ficha_path`, retrato 150×180, `Mapas/` como origen de fondos.
+- `pdf_import.py` por posición + ficha réplica de la hoja 2024 (21 cols + `armas`).
+- Arte Bloodborne (fuentes OFL, Caronte de Doré, QSS); `normalizar_fondo()` con
+  Pillow para JPEG gigantes; zoom/arrastre en `MapCanvas`; mapas jerárquicos
+  mundo→localización→punto (`imagen_path`, `puntos_interes`).
+- Compendio 5eTools (7.287 entradas, 10 categorías, filtro por libros, tablas
+  ordenables, statblocks/fichas HTML) y su arreglo de crash: UN modelo fuente +
+  QSortFilterProxyModel sin destrucciones, debounce 250 ms, `faulthandler`+logs.
+- Trasfondos en tabla; segunda plantilla PDF (hoja oficial rellenable, /AS).
 
-## 2026-10-06 — Archivos de personaje (carpetas, PDF, retratos)
-- `Personajes/<nombre>/` con PDF + foto (nombres libres); col `ficha_path`;
-  Vincular/Abrir/Quitar + autodetección; `Mapas/` origen de fondos.
-- Botón `Importar carpetas` (manda la carpeta, no el nombre interno del PDF);
-  núcleo sin diálogos (un modal colgaba los tests offscreen).
-- Retrato 150×180 en ficha con Cambiar/Quitar; `importar_archivo()` copia a
-  `Retratos/<nombre>.<ext>` + ruta `/`; autodetección por nombre.
+## 2026-10-10 — PDF: OCTAVIO es el nombre, Sabio el trasfondo
+- La plantilla oficial imprime el nombre arriba y rellena solo trasfondo/clase:
+  anclas separadas (`nombre` 756 → `trasfondo` 737 → `clase_sola` 151/737).
+- Fallback a texto impreso `_estatico(words,H,rect)` cuando el campo viene vacío
+  (hoja oficial); rasgos de clase y dotes en `rasgos_clase`+`pericia`.
+- Verificado con Octavio (Artífice Artillero 9, PG 93/93, 6 armas) y Squawks.
 
-## 2026-10-06 — PDF a personaje + ficha réplica
-- `pdf_import.py`: mapeo por posición (sufijos aleatorios, recalibrar si cambia
-  la plantilla); Squawks verificado (Pícaro 9, 18 skills/saves); `pypdf>=5`.
-- Ficha espejo de la hoja: cabecera + 6 tarjetas + 18 habilidades (—/C/E),
-  6 armas, cálculo en vivo; 21 cols + tabla `armas`. Página 2 no se importa.
+## 2026-10-10 — Subida a GitHub
+- git instalado con winget; `.gitignore` (BD, PDF, retratos, mapas, 5eTools,
+  logs y `__pycache__` NO se suben); commit `c10c2e9` → `marianomadrid/DYD`.
+- Token fino de un solo uso; el usuario debe revocarlo tras el push.
 
-## 2026-10-06 — Arte Bloodborne
-- Fuentes OFL (Cinzel/IM Fell/Cardo estática); Caronte de Doré (dominio
-  público) + textura procedural. `src/arte.py`: QSS, splash, fondo vacío.
-- OJO: verificar magia TTF `00 01 00 00` (Baskerville solo existe en variable).
+## 2026-10-11 — Modo aventura jugable (Nilgotia)
+- `src/motor.py`: guiones JSON en `data/scripts/` con `nodos` (titulo/texto/
+  retrato/opciones), `set` (flags) y `req`; estado por campaña en ajustes
+  `partida:<id>`; `leer_ref("guion:nodo")`; `ir:null` = final.
+- `src/widgets/aventura.py`: `DialogoAventura` con texto progresivo (QTimer) y
+  botones de opción; `_vaciar(layout)` (takeAt + setParent(None) +
+  sendPostedEvents) evita duplicar botones; sin diálogos modales al testar.
+- Col `script` en `localizaciones` y `puntos_interes` (migración + schema.sql);
+  se edita en Ciudades («Guion (aventura)») y se lanza con «Jugar aquí ▶» en
+  Mapas (mundo/localización/punto) vía `_loc_actual()`/`_poi_actual()`.
+- Guion `nilgotia.json` (Puerto Ceniza → taberna/sótano → chapitel, 2 finales)
+  enganchado a Puerto Ceniza y Chapitel Ahogado del mundo NILGOTIA del usuario.
 
-## 2026-10-07 — Compendio 5eTools (7.287 entradas)
-- 8 categorías con fuente `5eTools · LIBRO`; reejecutar regenera solo esas
-  filas; XPHB/XDMG/XMM primero; excluye UA. Tablas `fuentes` y `ajustes`.
-- Monstruos/objetos/hechizos/clases en HTML (solo lectura); statblocks con
-  tabla CAR/PTOS/MOD/SALV, CR con XP/PB, iniciativa `+X (Y)` (Tiamat +0 (10)
-  correcto: DES 10, fórmula exacta del site); dotes con requisito y libro.
-- Clase = 16 filas con tabla compuesta (PB/rasgos/progresión/conjuros estándar
-  full/half/third/pact) + pills de subclase (`clase_subs`, ninguna marcada) con
-  rasgos inline por nivel (azul luna); filtro por libros en diálogo grande.
-- Tablas ordenables (hechizo/objeto/dote) con clic en cabecera y claves en
-  R_SORT (ritual/conc, valor/peso numéricos). OJO: `--limite` no borra.
-
-## 2026-10-07 — Estabilidad: bucle de ventana + crasheo en lista
-- Mapa vacío realimentaba resizeEvent: etiqueta Ignored + `_ajustar_mapa()`.
-- Crasheo (shiboken, use-after-free): UN modelo fuente + QSortFilterProxyModel
-  con tope; CERO destrucciones en sesión; CRUD incremental; debounce 250 ms;
-  undo OFF; casillas una vez; `_todas` sincroniza. `faulthandler` + logs.
-
-## 2026-10-08 — Fondos gigantes incompatibles
-- Qt no abre JPEG enormes/raros (Costa de 19 MB, 10200×6600): `normalizar_fondo()`
-  en arte.py crea `<nombre> (Qt).png` útil con Pillow (requiere `Pillow>=10`);
-  avisos en vez de silencio al fallar. Vale para mapamundi y battlemap.
-
-## 2026-10-08 — Zoom en el mapamundi
-- Etiqueta dentro de QScrollArea + `_zoom` (0.2–8.0): botones +/-, 1:1,
-  Ajustar y Ctrl+rueda; clic de ciudades sigue en relativo a la etiqueta.
-
-## 2026-10-08 — Mapas jerárquicos + zoom
-- `MapCanvas` pinta imagen + pines con nombre (clic selecciona, doble entra);
-  mundo → localización (mapa propio `imagen_path`) → punto (`puntos_interes`
-  con imagen opcional). Zoom Ctrl+rueda/botones en scroll; scroll Padre = viewport.
-
-## 2026-10-08 — Arrastrar el mapa
-- `MapCanvas` con pan por arrastre (botón izq. en vacío o central): mueve
-  scrollbars con umbral 4px; clic quieto sigue seleccionando/creando.
-
-## 2026-10-08 — Borrar mundo + battlemap en localización
-- Botón Borrar mundo (confirma con conteos; cascada, pjs intactos) y
-  `+ Battlemap aquí` en la localización (salta al mapa creado).
-
-## 2026-10-08 — Trasfondos en tabla (Origen/Habilidades)
-- Columnas Nombre/Origen/Habilidades/Libro; origen de `ability.choose`,
-  habilidades con nombres completos; detalle con equipo/herramientas/dote.
-
-## 2026-10-08 — Segunda plantilla PDF (hoja oficial rellenable)
-- Detección por nombres (`Text11` vs `text_1imkp`) + mapa propio: PG actual
-  vacío→máx, velocidad en metros, saves/habs por filas con valor visible
-  (campo o impreso) y pericia por comparación. Botón Importar carpetas fuera.
-
-## 2026-10-08 — Casillas se leen por /AS, no /V
-- `_box_checked` manda /AS (lo visible) y si no /V; vale para muertes/armaduras.
+## 2026-10-11 — Bug esquema: coma dentro del comentario
+- `imagen_path TEXT DEFAULT '' -- nota,` deja la coma DENTRO del comentario y
+  `script` pega con la línea anterior → `executescript` revienta y la app no
+  arranca. La coma SIEMPRE antes del `--`. También: al crear el mundo Nilgotia
+  el nombre del usuario venía en mayúsculas (`NILGOTIA`) y se duplicó;
+  comparar en minúsculas y unir en el mundo existente antes de sembrar.

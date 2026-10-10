@@ -148,6 +148,14 @@ def init_db():
     lcols = {r["name"] for r in con.execute("PRAGMA table_info(localizaciones)").fetchall()}
     if "imagen_path" not in lcols:
         con.execute("ALTER TABLE localizaciones ADD COLUMN imagen_path TEXT DEFAULT ''")
+    if "script" not in lcols:
+        con.execute("ALTER TABLE localizaciones ADD COLUMN script TEXT DEFAULT ''")
+    try:
+        pcols = {r["name"] for r in con.execute("PRAGMA table_info(puntos_interes)").fetchall()}
+        if "script" not in pcols:
+            con.execute("ALTER TABLE puntos_interes ADD COLUMN script TEXT DEFAULT ''")
+    except Exception:
+        pass
     PERSONAJES_DIR.mkdir(parents=True, exist_ok=True)
     MAPAS_DIR.mkdir(parents=True, exist_ok=True)
     RETRATOS_DIR.mkdir(parents=True, exist_ok=True)

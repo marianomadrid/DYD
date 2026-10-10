@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS localizaciones (
   x REAL DEFAULT 0.25, -- posición relativa 0..1 sobre la imagen del mapa mundo
   y REAL DEFAULT 0.25,
   imagen_path TEXT DEFAULT '', -- mapa propio de la localización (ciudad, mazmorra...)
+  script TEXT DEFAULT '', -- nodo inicial "guion:nodo" para el modo aventura
   FOREIGN KEY (mapa_mundo_id) REFERENCES mapas_mundo(id) ON DELETE CASCADE
 );
 
@@ -93,7 +94,8 @@ CREATE TABLE IF NOT EXISTS puntos_interes (
   descripcion TEXT DEFAULT '',
   x REAL DEFAULT 0.5, -- posición relativa 0..1 sobre la imagen de la localización
   y REAL DEFAULT 0.5,
-  imagen_path TEXT DEFAULT '' -- mapa o foto del punto (taberna, estatua...)
+  imagen_path TEXT DEFAULT '', -- mapa o foto del punto (taberna, estatua...)
+  script TEXT DEFAULT '' -- nodo inicial "guion:nodo" para el modo aventura
 );
 CREATE INDEX IF NOT EXISTS idx_poi_loc ON puntos_interes(localizacion_id);
 
