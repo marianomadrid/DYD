@@ -12,7 +12,6 @@ class CiudadesView(QWidget):
         self.tipo = QComboBox(); self.tipo.addItems(["ciudad", "pueblo", "mazmorra", "punto_interes"])
         self.mapa = QComboBox()
         self.desc = QTextEdit(); self.desc.setMaximumHeight(120)
-        self.script = QLineEdit(); self.script.setPlaceholderText("p. ej. nilgotia:llegada")
         self.rel = QLabel("—"); self.rel.setWordWrap(True)
 
         form = QFormLayout()
@@ -20,7 +19,6 @@ class CiudadesView(QWidget):
         form.addRow("Tipo", self.tipo)
         form.addRow("Mapa mundo", self.mapa)
         form.addRow("Descripción", self.desc)
-        form.addRow("Guion (aventura)", self.script)
         form.addRow("Relacionado", self.rel)
 
         b_new = QPushButton("＋ Nueva"); b_save = QPushButton("💾 Guardar"); b_del = QPushButton("🗑 Borrar")
@@ -66,7 +64,6 @@ class CiudadesView(QWidget):
             if self.mapa.itemData(i) == l["mapa_mundo_id"]:
                 self.mapa.setCurrentIndex(i)
         self.desc.setPlainText(l["descripcion"] or "")
-        self.script.setText(l["script"] or "")
         self.rel.setText(f"👥 {len(pers)} personajes: " + (", ".join(p['nombre'] for p in pers) or "—") +
                          f"\n⚔ {len(bms)} battlemaps: " + (", ".join(b['nombre'] for b in bms) or "—"))
 
@@ -81,9 +78,9 @@ class CiudadesView(QWidget):
         cur = self.lst.currentItem()
         if not cur: return
         con = connect()
-        con.execute("UPDATE localizaciones SET nombre=?,tipo=?,mapa_mundo_id=?,descripcion=?,script=? WHERE id=?",
+        con.execute("UPDATE localizaciones SET nombre=?,tipo=?,mapa_mundo_id=?,descripcion=? WHERE id=?",
                     (self.nombre.text().strip(), self.tipo.currentText(), self.mapa.currentData(),
-                     self.desc.toPlainText(), self.script.text().strip(), cur.data(Qt.UserRole)))
+                     self.desc.toPlainText(), cur.data(Qt.UserRole)))
         con.commit(); con.close(); self.refresh()
 
     def borrar(self):

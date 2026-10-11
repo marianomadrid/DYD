@@ -28,16 +28,9 @@
   logs y `__pycache__` NO se suben); commit `c10c2e9` → `marianomadrid/DYD`.
 - Token fino de un solo uso; el usuario debe revocarlo tras el push.
 
-## 2026-10-11 — Modo aventura jugable (Nilgotia)
-- `src/motor.py`: guiones JSON en `data/scripts/` con `nodos` (titulo/texto/
-  retrato/opciones), `set` (flags) y `req`; estado por campaña en ajustes
-  `partida:<id>`; `leer_ref("guion:nodo")`; `ir:null` = final.
-- `src/widgets/aventura.py`: `DialogoAventura` con texto progresivo (QTimer) y
-  botones de opción; `_vaciar(layout)` (takeAt + setParent(None) +
-  sendPostedEvents) evita duplicar botones; sin diálogos modales al testar.
-- Col `script` en `localizaciones` y `puntos_interes` (migración + schema.sql);
-  se edita en Ciudades («Guion (aventura)») y se lanza con «Jugar aquí ▶» en
-  Mapas (mundo/localización/punto) vía `_loc_actual()`/`_poi_actual()`.
+## 2026-10-11 — Modo aventura jugable (Nilgotia) — REVERTIDO (ver abajo)
+- (Se implementó y el mismo día se retiró a petición del usuario: no quiere
+  jugar. Queda el mapa interactivo puro. Detalle histórico en git `a3b8c28`.)
 - Guion `nilgotia.json` (Puerto Ceniza → taberna/sótano → chapitel, 2 finales)
   enganchado a Puerto Ceniza y Chapitel Ahogado del mundo NILGOTIA del usuario.
 
@@ -47,3 +40,10 @@
   arranca. La coma SIEMPRE antes del `--`. También: al crear el mundo Nilgotia
   el nombre del usuario venía en mayúsculas (`NILGOTIA`) y se duplicó;
   comparar en minúsculas y unir en el mundo existente antes de sembrar.
+
+## 2026-10-11 — Mapa interactivo sin modo juego
+- El usuario no quiere jugar: fuera botones «Jugar», diálogo de aventura,
+  `src/motor.py`, `src/widgets/aventura.py` y `data/scripts/nilgotia.json`.
+  Ciudades pierde el campo «Guion»; el mapa queda como interactivo puro
+  (clic selecciona, doble clic entra, zoom/arrastre). Col `script` en BD sin
+  uso (se deja por compatibilidad); flags `partida:*` limpiados.

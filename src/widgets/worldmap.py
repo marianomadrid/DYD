@@ -230,8 +230,6 @@ class WorldMapWidget(QWidget):
         col_d = QVBoxLayout()
         col_d.addWidget(self.detalle, 1)
         col_d.addWidget(b_entrar)
-        b_jugar = QPushButton("Jugar aquí ▶")
-        col_d.addWidget(b_jugar)
         mid.addLayout(col_d, 2)
         l0 = QVBoxLayout(pg0)
         l0.addLayout(top)
@@ -267,13 +265,7 @@ class WorldMapWidget(QWidget):
         col_d1 = QVBoxLayout()
         col_d1.addWidget(self.det_poi, 1)
         col_d1.addWidget(b_entrar_poi)
-        b_jugar_poi = QPushButton("Jugar punto ▶")
-        col_d1.addWidget(b_jugar_poi)
         mid1.addLayout(col_d1, 2)
-        fila_jugar = QHBoxLayout()
-        b_jugar_loc = QPushButton("Jugar aquí ▶")
-        fila_jugar.addWidget(b_jugar_loc)
-        fila_jugar.addStretch(1)
         l1 = QVBoxLayout(pg1)
         l1.addLayout(top1)
         self.scroll1 = _scroll_con(self.canvas_loc)
@@ -281,7 +273,6 @@ class WorldMapWidget(QWidget):
                                    self.scroll1.verticalScrollBar())
         l1.addWidget(self.scroll1, 3)
         l1.addLayout(self._fila_zoom(self.canvas_loc))
-        l1.addLayout(fila_jugar)
         l1.addLayout(mid1, 1)
 
         # ---------- página 2: punto de interés ----------
@@ -324,7 +315,6 @@ class WorldMapWidget(QWidget):
         b_del_city.clicked.connect(self.borrar_ciudad)
         b_goto.clicked.connect(self.ir_battlemap)
         b_entrar.clicked.connect(self.entrar_ciudad)
-        b_jugar.clicked.connect(self.jugar_loc_sel)
         self.cmb.currentIndexChanged.connect(self.cargar)
         self.canvas.clic_vacio.connect(self._clic_vacio_mundo)
         self.canvas.clic_pin.connect(self._clic_pin_mundo)
@@ -337,8 +327,6 @@ class WorldMapWidget(QWidget):
         b_add_bm.clicked.connect(self.crear_battlemap_aqui)
         b_goto1.clicked.connect(self.ir_battlemap)
         b_entrar_poi.clicked.connect(self.entrar_poi)
-        b_jugar_loc.clicked.connect(self.jugar_loc_actual)
-        b_jugar_poi.clicked.connect(self.jugar_poi_sel)
         self.lst_poi.itemClicked.connect(self._ver_poi_item)
         self.canvas_loc.clic_vacio.connect(self._clic_vacio_loc)
         self.canvas_loc.clic_pin.connect(self._clic_pin_loc)
@@ -552,25 +540,6 @@ class WorldMapWidget(QWidget):
         if self.goto_battlemap:
             self.goto_battlemap()
 
-    # ---------- modo aventura ----------
-    def _campana_de_loc(self, lid):
-        con = connect()
-        r = con.execute("SELECT m.campana_id FROM localizaciones l JOIN mapas_mundo m "
-                        "ON m.id=l.mapa_mundo_id WHERE l.id=?", (lid,)).fetchone()
-        con.close()
-        return r["campana_id"] if r else None
-
-    def _jugar_ref(self, ref, campana_id):
-        from ..motor import leer_ref, Aventura
-        from .aventura import DialogoAventura
-        try:
-            g, n = leer_ref(ref)
-            av = Aventura(g, campana_id, n)
-        except (ValueError, FileNotFoundError) as e:
-            QMessageBox.warning(self, "Aventura", f"No se pudo abrir el guion:\n{e}")
-            return
-        DialogoAventura(av, parent=self).exec()
-
     def _loc_actual(self):
         """Localización marcada por clic o, en su defecto, la seleccionada."""
         lid = getattr(self, "_sel", None)
@@ -578,51 +547,6 @@ class WorldMapWidget(QWidget):
             return lid
         it = self.lst.currentItem()
         return it.data(Qt.UserRole) if it else None
-
-    def jugar_loc_sel(self):
-        lid = self._loc_actual()
-        if not lid:
-            QMessageBox.information(self, "Jugar", "Selecciona primero una localización.")
-            return
-        con = connect()
-        r = con.execute("SELECT script FROM localizaciones WHERE id=?", (lid,)).fetchone()
-        con.close()
-        if not r or not r["script"]:
-            QMessageBox.information(self, "Jugar", "Esta localización no tiene guion.")
-            return
-        self._jugar_ref(r["script"], self._campana_de_loc(lid))
-
-    def jugar_loc_actual(self):
-        if not self._loc_id:
-            return
-        con = connect()
-        r = con.execute("SELECT script FROM localizaciones WHERE id=?", (self._loc_id,)).fetchone()
-        con.close()
-        if not r or not r["script"]:
-            QMessageBox.information(self, "Jugar", "Esta localización no tiene guion.")
-            return
-        self._jugar_ref(r["script"], self._campana_de_loc(self._loc_id))
-
-    def _poi_actual(self):
-        pid = getattr(self, "_sel_poi", None)
-        if pid:
-            return pid
-        it = self.lst_poi.currentItem()
-        return it.data(Qt.UserRole) if it else None
-
-    def jugar_poi_sel(self):
-        pid = self._poi_actual()
-        if not pid:
-            QMessageBox.information(self, "Jugar", "Selecciona primero un punto.")
-            return
-        con = connect()
-        r = con.execute("SELECT p.script, p.localizacion_id FROM puntos_interes p WHERE p.id=?",
-                        (pid,)).fetchone()
-        con.close()
-        if not r or not r["script"]:
-            QMessageBox.information(self, "Jugar", "Este punto no tiene guion.")
-            return
-        self._jugar_ref(r["script"], self._campana_de_loc(r["localizacion_id"]))
 
     # ---------- página localización ----------
     def cargar_loc(self):

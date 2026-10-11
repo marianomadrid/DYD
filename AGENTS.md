@@ -21,11 +21,10 @@
 - `TokenItem.pid` puede ser `None` (token temporal) — `guardar_todo()` salta los `None`. `colocar_token()` usa el color real de la BD; el temporal, gris.
 - `refrescar_listas()` conserva la selección de `self._battlemap_id` al reconstruir el combo — mantenerlo o vuelven duplicados/renombres perdidos. Reglas: 1 casilla = 5 pies (Chebyshev); iniciativa en memoria (d20+mod DES).
 
-## Modo aventura (`src/motor.py`, `src/widgets/aventura.py`)
-- Guiones JSON en `data/scripts/<guion>.json`: `nodos{id:{titulo,texto,retrato,opciones[{texto,ir,set,req}]}}`; `ir:null` = final. `Aventura.elegir(i)` aplica `set` (flags) y avanza; `req` oculta opciones.
-- Estado por campaña en ajustes `partida:<campana_id>` (solo flags); `leer_ref("guion:nodo")` valida la referencia.
-- `localizaciones.script` / `puntos_interes.script` = nodo inicial; se edita en Ciudades (campo «Guion») y se lanza con «Jugar aquí ▶» en Mapas (mundo / localización / punto). `worldmap` suma `_loc_actual()` y `_poi_actual()` con respaldo al `currentItem`.
-- `DialogoAventura` escribe el texto con `QTimer` y usa `_vaciar(layout)` (takeAt + setParent(None) + sendPostedEvents) para no duplicar botones al cambiar de nodo.
+## Mapa interactivo (`src/widgets/worldmap.py`)
+- Jerarquía mundo → localización (`imagen_path`) → punto (`puntos_interes`).
+- `MapCanvas`: clic selecciona (detalle+lista), doble clic entra, clic en vacío crea; zoom Ctrl+rueda/botones, arrastre con umbral 4px.
+- `_loc_actual()` respalda el clic con `currentItem`; Ciudades edita cada localización.
 
 ## PDF a personaje (`src/pdf_import.py`)
 - Mapeo por posición (`_ANCHORS`: página + x,y, tol 25pt), nunca por nombre de campo: los sufijos (`text_1imkp`) cambian en cada exportación. Recalibrar si cambia la plantilla. Verificado con `Personajes/Sacuago 9.pdf` y `Octavio_Hoja_nivel9_editable.pdf`.
